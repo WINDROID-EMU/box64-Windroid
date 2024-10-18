@@ -30,10 +30,19 @@
 int fpu_get_scratch(dynarec_arm_t* dyn, int ninst)
 {
     int ret = SCRATCH0 + dyn->n.fpu_scratch++;
-    if(dyn->n.ymm_used) printf_log(LOG_INFO, "Warning, getting a scratch register after getting some YMM at inst=%d\n", ninst);
+    if(dyn->n.ymm_used) {
+    printf_log(LOG_INFO, "Warning, getting a scratch register after getting some YMM at inst=%d\n", ninst);
+    if(dyn->n.fpu_scratch >= MAX_SCRATCH) {
+        printf_log(LOG_ERROR, "Error: Exceeded maximum FPU scratch registers at inst=%d\n", ninst);
+        return -1; // Error condition: exceeded available scratch registers
+    }
+}
     if(dyn->n.neoncache[ret].t==NEON_CACHE_YMMR || dyn->n.neoncache[ret].t==NEON_CACHE_YMMW) {
         // should only happens in step 0...
-        dyn->insts[ninst].purge_ymm |= (1<<dyn->n.neoncache[ret].n); // mark as purged
+        dyn->insts[ninst].purge_ymm |= (1<<dyn->n.neoncache[ret].n);
+if (dyn->n.neoncache[ret].v != 0) {
+    printf_log(LOG_INFO, "Purging YMM register at inst=%d\n", ninst);
+} // mark as purged
         dyn->n.neoncache[ret].v = 0; // reset it
     }
     return ret;
@@ -45,7 +54,10 @@ int fpu_get_double_scratch(dynarec_arm_t* dyn, int ninst)
     if(dyn->n.ymm_used) printf_log(LOG_INFO, "Warning, getting a double scratch register after getting some YMM at inst=%d\n", ninst);
     if(dyn->n.neoncache[ret].t==NEON_CACHE_YMMR || dyn->n.neoncache[ret].t==NEON_CACHE_YMMW) {
         // should only happens in step 0...
-        dyn->insts[ninst].purge_ymm |= (1<<dyn->n.neoncache[ret].n); // mark as purged
+        dyn->insts[ninst].purge_ymm |= (1<<dyn->n.neoncache[ret].n);
+if (dyn->n.neoncache[ret].v != 0) {
+    printf_log(LOG_INFO, "Purging YMM register at inst=%d\n", ninst);
+} // mark as purged
         dyn->n.neoncache[ret].v = 0; // reset it
     }
     if(dyn->n.neoncache[ret+1].t==NEON_CACHE_YMMR || dyn->n.neoncache[ret+1].t==NEON_CACHE_YMMW) {
@@ -106,7 +118,10 @@ int fpu_get_reg_emm(dynarec_arm_t* dyn, int ninst, int emm)
     int ret = EMM0 + emm;
     if(dyn->n.neoncache[ret].t==NEON_CACHE_YMMR || dyn->n.neoncache[ret].t==NEON_CACHE_YMMW) {
         // should only happens in step 0...
-        dyn->insts[ninst].purge_ymm |= (1<<dyn->n.neoncache[ret].n); // mark as purged
+        dyn->insts[ninst].purge_ymm |= (1<<dyn->n.neoncache[ret].n);
+if (dyn->n.neoncache[ret].v != 0) {
+    printf_log(LOG_INFO, "Purging YMM register at inst=%d\n", ninst);
+} // mark as purged
         dyn->n.neoncache[ret].v = 0; // reset it
     }
     dyn->n.fpuused[ret] = 1;
