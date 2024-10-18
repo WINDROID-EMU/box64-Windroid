@@ -487,12 +487,12 @@ int convert_bitmask(uint64_t bitmask);
 #define PST_L1_STREAM_U12(Rn, imm12)    EMIT(PRFM_imm(((imm12)>>3)&0xfff, Rn, 0b01001))
 
 // Data Memory Barrier
-#define DMB_gen(CRm)                    (0b1101010100<<22 | 0b011<<16 | 0b0011<<12 | (CRm)<<8 | 1<<7 | 0b01<<5 | 0b11111)
+#define DMB_gen(CRm)                    (0b1101010100ULL<<22 | 0b011<<16 | 0b0011<<12 | (CRm)<<8 | 1<<7 | 0b01<<5 | 0b11111)
 #define DMB_ISH()                       EMIT(DMB_gen(0b1011))
 #define DMB_SY()                        EMIT(DMB_gen(0b1111))
 
 // Data Synchronization Barrier
-#define DSB_gen(CRm)                    (0b1101010100<<22 | 0b011<<16 | 0b0011<<12 | (CRm)<<8 | 1<<7 | 0b00<<5 | 0b11111)
+#define DSB_gen(CRm)                    (0b1101010100ULL<<22 | 0b011<<16 | 0b0011<<12 | (CRm)<<8 | 1<<7 | 0b00<<5 | 0b11111)
 #define DSB_ISH()                       EMIT(DSB_gen(0b1011))
 #define DSB_ISHST()                     EMIT(DSB_gen(0b1010))
 #define DSB_SY()                        EMIT(DSB_gen(0b1111))
@@ -502,7 +502,7 @@ int convert_bitmask(uint64_t bitmask);
 #define BRK(imm16)                      EMIT(BRK_gen(imm16))
 
 // BR and Branches
-#define BR_gen(Z, op, A, M, Rn, Rm)       (0b1101011<<25 | (Z)<<24 | (op)<<21 | 0b11111<<16 | (A)<<11 | (M)<<10 | (Rn)<<5 | (Rm))
+#define BR_gen(Z, op, A, M, Rn, Rm)       (0b1101011ULL<<25 | (Z)<<24 | (op)<<21 | 0b11111<<16 | (A)<<11 | (M)<<10 | (Rn)<<5 | (Rm))
 #define BR(Rn)                            EMIT(BR_gen(0, 0b00, 0, 0, Rn, 0))
 #define BLR(Rn)                           EMIT(BR_gen(0, 0b01, 0, 0, Rn, 0))
 #define RET(Rn)                           EMIT(BR_gen(0, 0b10, 0, 0, Rn, 0))
