@@ -375,7 +375,7 @@ void inplace_shrink_wmsizehints(void* hints)
     *(long_t*)hints = flags;
 }
 
-void convert_XWindowAttributes_to_32(void* d, void* s)
+void convert_XWindowAttributes_to_32(void* dpy, void* d, void* s)
 {
     my_XWindowAttributes_t* src = s;
     my_XWindowAttributes_32_t* dst = d;
@@ -385,7 +385,7 @@ void convert_XWindowAttributes_to_32(void* d, void* s)
     dst->height = src->height;
     dst->border_width = src->border_width;
     dst->depth = src->depth;
-    dst->visual = to_ptrv(src->visual);
+    dst->visual = to_ptrv(convert_Visual_to_32(dpy, src->visual));
     dst->root = to_ulong(src->root);
     dst->c_class = src->c_class;
     dst->bit_gravity = src->bit_gravity;
@@ -433,6 +433,19 @@ void convert_XVisualInfo_to_32(void* dpy, my_XVisualInfo_32_t* dst, my_XVisualIn
     dst->blue_mask = to_ulong(src->blue_mask);
     dst->colormap_size = src->colormap_size;
     dst->bits_per_rgb = src->bits_per_rgb;
+}
+void convert_XVisualInfo_to_64_novisual(void* dpy, my_XVisualInfo_t* dst, my_XVisualInfo_32_t* src)
+{
+    dst->bits_per_rgb = src->bits_per_rgb;
+    dst->colormap_size = src->colormap_size;
+    dst->blue_mask = from_ulong(src->blue_mask);
+    dst->green_mask = from_ulong(src->green_mask);
+    dst->red_mask = from_ulong(src->red_mask);
+    dst->c_class = src->c_class;
+    dst->depth = src->depth;
+    dst->screen = src->screen;
+    dst->visualid = from_ulong(src->visualid);
+    dst->visual = NULL;
 }
 void convert_XVisualInfo_to_64(void* dpy, my_XVisualInfo_t* dst, my_XVisualInfo_32_t* src)
 {
