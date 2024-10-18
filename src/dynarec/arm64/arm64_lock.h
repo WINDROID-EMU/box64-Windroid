@@ -2,6 +2,9 @@
 #define __ARM64_LOCK__H__
 #include <stdint.h>
 
+// Macro para verificar ponteiro nulo
+#define CHECK_NULL(ptr) if ((ptr) == NULL) return (typeof(ptr))NULL; // Retorna NULL se o ponteiro for nulo
+
 // LDAXRB of ADDR
 extern uint8_t arm64_lock_read_b(void* addr);
 // STLXRB of ADDR, return 0 if ok, 1 if not
